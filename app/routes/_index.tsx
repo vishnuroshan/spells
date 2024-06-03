@@ -1,6 +1,9 @@
-import type { MetaFunction } from "@remix-run/node";
+/* eslint-disable jsx-a11y/media-has-caption */
+import type { MetaFunction, TypedResponse } from "@remix-run/node";
 import { useState, useEffect, createContext } from "react";
 import '~/styles/globals.css';
+import { json, useLoaderData } from "@remix-run/react";
+
 const ThemeContext = createContext("light");
 
 interface Spell {
@@ -10,6 +13,13 @@ interface Spell {
     incantation: string;
     effect: string;
   }
+}
+
+export async function loader(): Promise<TypedResponse<SpellResp>> {
+  console.log("calling spell API from backend");
+  const res = await fetch(`https://api.potterdb.com/v1/spells`)
+  const spells = await res.json();
+  return json({ data: spells.data.filter((e: Spell)=>e.type === "spell" && e.attributes.incantation) })
 }
 
 interface SpellResp { data: Spell[] }
@@ -25,31 +35,28 @@ export default function Index() {
   const [spells, setSpells] = useState<Spell[]>([]);
   const [theme, setTheme] = useState("light");
   const [q, setQ] = useState('');
+  const initSpells = useLoaderData<typeof loader>()
   useEffect(() => {
-    fetch(`https://api.potterdb.com/v1/spells`).then(stream => {
-      return stream.json();
-    }).then((spells: SpellResp) => {
-      if (spells.data?.length > 0) {
-        setSpells(spells.data.filter(e => e.type === 'spell' && e.attributes.incantation));
-      }
-    })
+    setSpells(initSpells.data);
   }, []);
 
   useEffect(() => {
-    const s = setTimeout(() => {
-      fetch(`https://api.potterdb.com/v1/spells${q ? `?filter[incantation_cont]=${q}` : ''}`).then(stream => {
-        return stream.json();
-      }).then((spells: SpellResp) => {
-        if (spells.data?.length > 0) {
-          setSpells(spells.data.filter(e => e.type === 'spell' && e.attributes.incantation));
-        } else {
-          setSpells([]);
-        }
-      })
-    }, !q || q?.length > 2 ? 300 : 1000)
-    return () => clearTimeout(s);
+    if (q && q.length) {
+      const s = setTimeout(() => {
+        fetch(`https://api.potterdb.com/v1/spells${q ? `?filter[incantation_cont]=${q}` : ''}`).then(stream => {
+          return stream.json();
+        }).then((spells: SpellResp) => {
+          
+          if (spells.data?.length > 0) {
+            setSpells(spells.data.filter(e => e.type === 'spell' && e.attributes.incantation));
+          } else {
+            setSpells([]);
+          }
+        })
+      }, !q || q?.length > 2 ? 300 : 1000)
+      return () => clearTimeout(s);
+    } else {setSpells(initSpells.data)}
   }, [q])
-
 
   return (
     <ThemeContext.Provider value={theme}>
@@ -59,9 +66,9 @@ export default function Index() {
             Spells 🎩 🪄 🐇
           </div>
           <div className='nav-right'>
-            <input type='radio' checked={theme === "light"} onChange={() => { setTheme('light');  document.body.style.backgroundColor = "white"}} title='light' />
+            <input type='radio' checked={theme === "light"} onChange={() => { setTheme('light'); document.body.style.backgroundColor = "white" }} title='light' />
             <label htmlFor="html">Light</label>
-            <input type='radio' checked={theme === "dark"} onChange={() => { setTheme('dark');  document.body.style.backgroundColor = "black"}} title='dark' />
+            <input type='radio' checked={theme === "dark"} onChange={() => { setTheme('dark'); document.body.style.backgroundColor = "black" }} title='dark' />
             <label htmlFor="html">Dark</label>
           </div>
         </nav>
@@ -74,7 +81,12 @@ export default function Index() {
           </section>
           <section>
             <div className={`list-${theme}`}>
-              {spells.map((spell) => (<p key={spell.id} className={`item-${theme}`}>{spell.attributes.incantation} - {spell.attributes.effect}</p>))}
+              {spells.map((spell) => (
+                <div key={spell.id}>
+                  <p className={`item-${theme}`}>{spell.attributes.incantation} - {spell.attributes.effect}</p>
+                </div>
+
+              ))}
             </div>
           </section>
         </div>

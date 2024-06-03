@@ -91,20 +91,29 @@ nav {
   padding: 8px;
   margin: 8px;
   font-size: 16px;
-  border-radius: 6px;
-  
-  border-color: black;
+  border-radius: 8px;
+  border: 0;
+  background: white;
 }
+
+.search-input-light input::-webkit-input-placeholder {
+  color: black;
+}
+
+
 
 .search-input-dark {
   width: 100%;
   padding: 8px;
   margin: 8px;
   font-size: 16px;
-  border-radius: 6px;
-  border-color: white;
+  border-radius: 8px;
+  border: 0;
+  background: grey;
+}
 
-
+.search-input-dark input::-webkit-input-placeholder {
+  color: white;
 }
 .list-light {
   color: black;
