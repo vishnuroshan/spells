@@ -9,17 +9,31 @@ const ThemeContext = createContext("light");
 interface Spell {
   id: string;
   type: string;
+
   attributes: {
     incantation: string;
     effect: string;
+    hand: string;
+
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const transformData = (data: any[]) : Spell[] => {
+  return data.filter((e: Spell) => e.type === "spell"
+      && e.attributes.incantation && e.attributes.incantation !== 'None').map((e: Spell) => {
+        return {...e};
+      })
 }
 
 export async function loader(): Promise<TypedResponse<SpellResp>> {
   console.log("calling spell API from backend");
   const res = await fetch(`https://api.potterdb.com/v1/spells`)
   const spells = await res.json();
-  return json({ data: spells.data.filter((e: Spell)=>e.type === "spell" && e.attributes.incantation) })
+  const data = transformData(spells.data);
+  return json({
+    data
+  })
 }
 
 interface SpellResp { data: Spell[] }
@@ -46,16 +60,16 @@ export default function Index() {
         fetch(`https://api.potterdb.com/v1/spells${q ? `?filter[incantation_cont]=${q}` : ''}`).then(stream => {
           return stream.json();
         }).then((spells: SpellResp) => {
-          
+
           if (spells.data?.length > 0) {
-            setSpells(spells.data.filter(e => e.type === 'spell' && e.attributes.incantation));
+            setSpells(transformData(spells.data));
           } else {
             setSpells([]);
           }
         })
       }, !q || q?.length > 2 ? 300 : 1000)
       return () => clearTimeout(s);
-    } else {setSpells(initSpells.data)}
+    } else { setSpells(initSpells.data) }
   }, [q])
 
   return (
