@@ -92,13 +92,14 @@ nav {
   margin: 8px;
   font-size: 16px;
   border-radius: 8px;
-  border: 0;
+  border-style: double;
+  border-width: 0.5px;
   background: white;
 }
 
-.search-input-light input::-webkit-input-placeholder {
+/* .search-input-light input::-webkit-input-placeholder {
   color: black;
-}
+} */
 
 
 
@@ -108,13 +109,14 @@ nav {
   margin: 8px;
   font-size: 16px;
   border-radius: 8px;
-  border: 0;
-  background: grey;
+  border-style: double;
+  border-width: 0.5px;
+  background: white;
 }
 
-.search-input-dark input::-webkit-input-placeholder {
+/* .search-input-dark input::-webkit-input-placeholder {
   color: white;
-}
+} */
 .list-light {
   color: black;
   background-color: white;
@@ -157,4 +159,14 @@ margin-right: 2px;
   border: 1px solid rebeccapurple;
   border-radius: 6px;
   background-color: blueviolet;
+}
+
+.footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: black;
+   color: white;
+   text-align: center;
 }

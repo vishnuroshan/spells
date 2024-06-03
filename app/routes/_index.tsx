@@ -76,10 +76,10 @@ export default function Index() {
     <ThemeContext.Provider value={theme}>
       <div className={`content-${theme}`}>
         <nav>
-          <div className='nav-left'>
+          <div className='nav-left' title="initial data from server loader function">
             Spells 🎩 🪄 🐇
           </div>
-          <div className='nav-right'>
+          <div className='nav-right' title="using context to switch between themes">
             <input type='radio' checked={theme === "light"} onChange={() => { setTheme('light'); document.body.style.backgroundColor = "white" }} title='light' />
             <label htmlFor="html">Light</label>
             <input type='radio' checked={theme === "dark"} onChange={() => { setTheme('dark'); document.body.style.backgroundColor = "black" }} title='dark' />
@@ -103,6 +103,9 @@ export default function Index() {
               ))}
             </div>
           </section>
+        </div>
+        <div className="footer">
+          made with ❤️ in <a style={{color: 'white'}} href="https://remix.run/" target="_blank" rel="noreferrer">remix</a>
         </div>
       </div>
 
