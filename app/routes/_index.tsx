@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/media-has-caption */
 import type { MetaFunction, TypedResponse } from "@remix-run/node";
 import { useState, useEffect, createContext } from "react";
@@ -19,11 +20,11 @@ interface Spell {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const transformData = (data: any[]) : Spell[] => {
+const transformData = (data: any[]): Spell[] => {
   return data.filter((e: Spell) => e.type === "spell"
-      && e.attributes.incantation && e.attributes.incantation !== 'None').map((e: Spell) => {
-        return {...e};
-      })
+    && e.attributes.incantation && e.attributes.incantation !== 'None').map((e: Spell) => {
+      return { ...e };
+    })
 }
 
 export async function loader(): Promise<TypedResponse<SpellResp>> {
@@ -45,32 +46,41 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export function useDebounce(value: any, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState('');
+
+  useEffect(() => {
+    const id = setTimeout(() => { setDebouncedValue(value) }, delay);
+
+    return () => { clearTimeout(id); }
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
 export default function Index() {
   const [spells, setSpells] = useState<Spell[]>([]);
   const [theme, setTheme] = useState("light");
   const [q, setQ] = useState('');
+
+  const query = useDebounce(q);
   const initSpells = useLoaderData<typeof loader>()
   useEffect(() => {
     setSpells(initSpells.data);
   }, []);
 
   useEffect(() => {
-    if (q && q.length) {
-      const s = setTimeout(() => {
-        fetch(`https://api.potterdb.com/v1/spells${q ? `?filter[incantation_cont]=${q}` : ''}`).then(stream => {
-          return stream.json();
-        }).then((spells: SpellResp) => {
+    fetch(`https://api.potterdb.com/v1/spells${q ? `?filter[incantation_cont]=${query}` : ''}`).then(stream => {
+      return stream.json();
+    }).then((spells: SpellResp) => {
 
-          if (spells.data?.length > 0) {
-            setSpells(transformData(spells.data));
-          } else {
-            setSpells([]);
-          }
-        })
-      }, !q || q?.length > 2 ? 300 : 1000)
-      return () => clearTimeout(s);
-    } else { setSpells(initSpells.data) }
-  }, [q])
+      if (spells.data?.length > 0) {
+        setSpells(transformData(spells.data));
+      } else {
+        setSpells([]);
+      }
+    })
+  }, [query])
 
   return (
     <ThemeContext.Provider value={theme}>
@@ -105,7 +115,7 @@ export default function Index() {
           </section>
         </div>
         <div className="footer">
-          made with ❤️ in <a style={{color: 'white'}} href="https://remix.run/" target="_blank" rel="noreferrer">remix</a>
+          made with ❤️ in <a style={{ color: 'white' }} href="https://remix.run/" target="_blank" rel="noreferrer">remix</a>
         </div>
       </div>
 

@@ -17,7 +17,6 @@ export default function Ref() {
     setPerson(p);
   }
   const setName = (name: string) => {
-    
     person.name = name;
     setPerson(person);
   }

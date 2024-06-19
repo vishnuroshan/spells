@@ -170,3 +170,38 @@ margin-right: 2px;
    color: white;
    text-align: center;
 }
+
+.box {
+margin: 6px;
+    border: 1px solid grey;
+    border-radius: 8px;
+    padding: 24px;
+    width: 18px;
+    height: 18px;
+
+    font-size: 26px;
+    line-height: 0.6;
+}
+
+.row {
+display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-content: space-around;
+    align-items: center;
+}
+
+.game {
+  /* width: 50%;
+  height: 50%; */
+    border: 1px solid red;
+    border-radius: 8px;
+
+}
+.container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

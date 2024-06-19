@@ -26,6 +26,7 @@ export default function Fib() {
     const d = Number(n);
     return (d <= 1) ? d : fib(d - 1) + fib(d - 2);
   }, [])
+  
   const fibNumber = useMemo(() => fib(userNumber), [userNumber, fib]);
   
   const myArray = useMemo(()=>getArray(),[])
